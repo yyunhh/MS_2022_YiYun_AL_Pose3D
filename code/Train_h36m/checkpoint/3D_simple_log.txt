@@ -1,0 +1,1 @@
+epoch	lr	loss_train	loss_test	mpjpe_mean(train)	mpjpe_std(train)	mpjpe_mean(test)	mpjpe_std(test)	learnloss_train	learnloss_test	

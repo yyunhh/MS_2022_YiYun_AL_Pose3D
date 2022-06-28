@@ -1,0 +1,118 @@
+# Creates a new folder (<name==LearningLoss++>_<unique_id>) for dumping code, models
+
+experiment_name: "0615_Delete" #0421_10000_random_simple
+files_to_copy: ['main.py','main_ver2.py','activelearning.py', 'config_3D.py', 'configuration_3D.yml', 'dataloader_3D.py', 'mpi_inf_3dhp_dataloader.py', 'debug_3D.py', 'debug.py', 'debugger.py', 'load_h36m.py', 'opts.py', 'utils_3D.py', 'utils_my.py','utils.py']
+
+train: true      # Train a model from scratch or re-train an existing model.
+metric: false       # Compute PCKh scores and save in CSV file format.
+demo: false         # if true, model_load_HG also needs to trun true
+pick: false        # pick performance (inference annotation.npy)
+train_3D: false #0406
+metric_3D: false
+
+test_3D_simple: false # 0406 train_3D test/train = true
+train_3D_simple: false
+
+pick_3D: false
+
+pick_index_AL: true
+
+# <train 3D model>
+# train: false
+# metric: false
+# demo: False
+# pick: False
+# train_3D: true  
+# metric_3DL false
+# model_load_HG: true
+# model_load_3D_model: false/true
+# model_load_path_3D: change the previous 3D model location
+# best_model: true
+
+# <Inference 3D model>
+# (1) only metric_3D: true
+# (2) model_load_HG: true, model_load_3D_model: true, best_model: true
+# (3) model_load_path: '' (Best 2D model), model_load_path: '' (Best 3D model)
+# (4) AL: 0, random
+
+# <load ll>
+# train_3D: true 
+# model_load_LearnLoss: true
+# training: false, learning_loss
+
+precached_mpii: False      # False - First run, True subsequent runs: A proccessed copy of MPII is created for  fast access later
+precached_h36m: true
+mpi_inf_3dhp: False
+
+learnloss_only: False          # Train only the Learning Loss network, and not the Hourglass
+model_load_HG: true         #記得開   # Load a pretrained hourglass model
+model_load_3D_model: false # 0616之前要記得load 3D, learning_loss_network also needs to modify to true
+model_load_LearnLoss: false # 0616 要記得打開# Load a pretrained Learning Loss network
+resume_training: false         # Not tested, please set as False
+load_epoch: 'None'             # Not required, keep unchanged
+best_model: True               # Load best validation model
+
+# Path to experiment folder containing model (eg: LearningLoss++_1), not model directly
+model_load_path: "Best_2D_model" #3000_LL_load, 5000_Random, 15000" #"../Experiments/H36m_100_model_folder/" #713/826 /1012_Test_826
+model_load_path_3D: "../Expe riments/0421_10000_ll(2D+3D)_simple_3_1" #"../Ex_h36/0204_1000_2" #10000_ll_3D #3000_Random_3D_R2" #1000_Random_3D_new_true #5000_Random_3D_new
+model_save: "../Expe riments/"
+
+#Pick
+
+model_load_pre: "../Ex_h36/2000_LL"
+model_load_now: "../Ex_h36/3000_LL"
+
+
+#Pick_3D
+
+model_load_pre_3D: "../Ex_h36/0206_5000_7000_1"
+model_load_now_3D: "../Ex_h36/0206_7000_9000_2"
+
+epochs: 125            # Number of epochs to train Hourglass (or Learning Loss network)
+lr: 0.0003
+weight_decay: 0.0
+batch_size: 32 # one of them use for learn loss model
+num_heatmap: 16       # MPII: 16, LSP-LSPET: 14
+
+
+args: {
+  mpii_only: True,                  # True if experiment on MPII, False if experiment on LSP-LSPET
+  mpii_newell_validation: True,     # Keep true irrespective of mpii_only status
+
+  # del_extra_jnts: False if MPII, True if LSP-LSPET, ignore all else in {mpii, lsp, lspet}_params
+  mpii_params: {shuffle: True, lambda_head: 0.8, del_extra_jnts: False, train_ratio: 0.5},
+  lspet_params: {shuffle: False, train_ratio: 1.0},       # By default, all of LSPET is train
+  lsp_params: {shuffle: False, train_ratio: 0.5},         # By default, first 1000 LSP is train
+
+  misc: {viz: False, occlusion: False, hm_peak: 30, threshold: 0.25},                             # occlusion: True if occluded joints should be predicted
+  hourglass: {nstack: 2, inp_dim: 256, oup_dim: 16, bn: False, increase: 0, hm_shape: [64, 64]},  # oup_dim: 16 (MPII), 14 (LSP-LSPET)
+
+  # Original: True if architecture is GAP - Fully connected, False if architecture is Convolutional extractor
+  # training_obj: 'prob' uses the LearningLoss++ KL divergence based objective, 'pair' uses the original Learning Loss objective
+  # train: True trains the Learning Loss network.
+  learning_loss_network: {train: false, margin: 1, warmup: 0, fc: [128, 64, 32, 16, 8, 1], original: false, training_obj: '2D+3D'} # 2D, 3D, 2D+3D
+}
+
+args_3D: {
+  exp_name: "3D_exp",
+  loss_type: "MSE",
+  kl_factor: 0.0001,
+  data_path: "../data/",
+  dataset:  "h36m",
+  keypoints: "cpn_ft_h36m_dbb",
+  total_steps: 100000, #16000000
+  epochs: 800,
+  batch_size: 32, # train_model_3D 裡面b 在此(改變3D model)
+  eval_step: 5000,
+  lr: 1.0e-3,
+}
+
+active_learning: {
+  num_images: {total: 35822}, # If algorithm == 'random', then this field should become: {mpii: 1000, lspet: 0, lsp: 0} #debug_3D.py
+  algorithm: 'random',       # random, coreset, learning_loss, entropy, mixture, learning_loss # learning_loss by obj to see 2d or 3d
+  mode: 'ave',                # ave, ll_core, core_ll
+  random: {},                # No hyperparameters, so ignore
+  learningLoss: {},
+  coreSet: {},
+}
+
