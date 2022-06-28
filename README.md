@@ -37,5 +37,5 @@ Three folder
 ## Inference
 - Setting ```configuration_3D.yml```
     - Load 2D model: ```Best_2D_model``` or ```Train_h36m``` 
-    - Load 3D model: ``exp/0615_h36m_Train_h36m_1```
+    - Load 3D model: ```exp/0615_h36m_Train_h36m_1```
 - run ```eval.py```
