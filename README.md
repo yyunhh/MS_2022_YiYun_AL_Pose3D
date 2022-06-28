@@ -23,7 +23,11 @@ Three folder
 ## Configuration_3D.yml
 - 改exp_name
 - train/test_simple_model 擇一為true
-- 確認load_model_path
+- load 2D/3D model = True
+- load_model_path
+- 以下紅色地方
+- ![image](https://user-images.githubusercontent.com/72399747/176245917-46fd4f09-e01c-4fe6-8843-9c2accfd3c25.png)
+
 
 ## Train
 - Setting ```configuration_3D.yml```
