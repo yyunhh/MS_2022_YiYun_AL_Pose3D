@@ -5,6 +5,9 @@ Three folder
 - code
 - exp: place the 3D model
 - data
+
+![image](https://user-images.githubusercontent.com/72399747/176245611-8336d7b4-0853-4ec7-933a-abd1c6a38047.png)
+
 ## Dataset
 
 - Download h36m_cache_train.npy(for training)
