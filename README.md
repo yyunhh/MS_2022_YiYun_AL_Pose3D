@@ -11,6 +11,7 @@ Three folder
 ## Dataset
 
 - Download h36m_cache_train.npy(for training)
+    - NAS裡面: Dataset/Ex_h36m/
     - h36m_cache_train_15000.npy
     - h36m_cache_train_15001.npy
     - h36m_cache_train_15002.npy
